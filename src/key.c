@@ -32,12 +32,12 @@ gen_key(int64 *f)
 {
   int i = 0;
   int j = 0;
-  unsigned int r = 0;
+  uint64 r = 0;
   uint64 key[64];
   randombytes((unsigned char*)key, 64*sizeof(uint64));
 
   while(i < PASS_N) {
-    if(j == PASS_N) {
+    if(j == 64) {
       randombytes((unsigned char*)key, 64*sizeof(uint64));
       j = 0;
     }
