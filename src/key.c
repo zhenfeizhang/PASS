@@ -27,21 +27,24 @@
 #include "randombytes.h"
 #include "pass.h"
 
+
+#define RAND_LEN (64)
+
 int
 gen_key(int64 *f)
 {
   int i = 0;
   int j = 0;
   uint64 r = 0;
-  uint64 key[64];
-  randombytes((unsigned char*)key, 64*sizeof(uint64));
+  uint64 pool[RAND_LEN];
+  randombytes((unsigned char*)pool, RAND_LEN*sizeof(uint64));
 
   while(i < PASS_N) {
-    if(j == 64) {
-      randombytes((unsigned char*)key, 64*sizeof(uint64));
+    if(j == RAND_LEN) {
+      randombytes((unsigned char*)pool, RAND_LEN*sizeof(uint64));
       j = 0;
     }
-    if(!r) r = key[j++];
+    if(!r) r = pool[j++];
     switch(r & 0x03) {
       case 1: f[i] = -1; break;
       case 2: f[i] =  0; break;
