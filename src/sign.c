@@ -60,9 +60,11 @@ mknoise(int64 *y)
       fastrandombytes((unsigned char*)randpool, RAND_LEN*sizeof(uint16));
       randpos = 0;
     }
-    x = randpool[randpos++] & (2*PASS_k + 1); // Should be power of 2 - 1...
+    x = randpool[randpos++];
 
-    if(x == SAFE_RAND_k) continue;
+    if(x >= SAFE_RAND_k) continue;
+
+    x &= (2*PASS_k + 1);
 
     y[i] = x - PASS_k;
     i++;
