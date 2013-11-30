@@ -22,13 +22,8 @@
 
 DEST=../data/$1_wisdom.dat
 
-factors=( $(factor $1) )
-if [ -z "${factors[2]}" ]
-then
-    L=$(($1-1))
-else
-    L=$1
-fi
+# Assume input is prime
+L=$(($1-1))
 
 echo "Generating FFTW wisdom for transform length $L and storing it in data/$1_wisdom.dat"
 
