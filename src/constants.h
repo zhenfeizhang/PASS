@@ -77,8 +77,8 @@
 #endif
 
 
-#define SAFE_RAND_N (65536 - (65536 % PASS_N))
-#define SAFE_RAND_k (65536 - (65536 % (2 * PASS_k + 1)))
+#define UNSAFE_RAND_N (65536 - (65536 % PASS_N))
+#define UNSAFE_RAND_k (65536 - (65536 % (2 * PASS_k + 1)))
 
 
 /* Basic parameter checks */

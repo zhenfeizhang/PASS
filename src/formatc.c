@@ -64,7 +64,7 @@ formatc(b_sparse_poly *c, const unsigned char *digest)
     indx = ((pool[j] << 8) | (pool[j+1]));
     j += 2;
 
-    if(indx > SAFE_RAND_N) continue;
+    if(indx >= UNSAFE_RAND_N) continue;
 
     indx %= PASS_N;
 
