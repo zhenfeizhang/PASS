@@ -33,7 +33,7 @@ hash(unsigned char *h, const int64 *y, const unsigned char *msg_digest)
   unsigned char in[PASS_t + HASH_BYTES];
   unsigned char *pos = in + HASH_BYTES;
 
-  strncpy((char *)in, (const char *)msg_digest, HASH_BYTES);
+  memcpy(in, msg_digest, HASH_BYTES);
 
   for(i=0; i<PASS_t; i++) {
     *pos = (unsigned char) (y[S[i]] & 0xff);
