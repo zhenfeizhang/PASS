@@ -54,7 +54,10 @@ main(int argc, char **argv)
 
   memset(in, '0', MLEN);
   z = malloc(PASS_N * sizeof(int64));
-
+  if(z==NULL) {
+    fprintf(stderr,"ERROR: Could not allocate memory.\n");
+    exit(EXIT_FAILURE);
+  }
   init_fast_prng();
 
   if(ntt_setup() == -1) {
