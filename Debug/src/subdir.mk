@@ -14,9 +14,10 @@ C_SRCS += \
 ../src/key.c \
 ../src/ntt.c \
 ../src/poly.c \
-../src/randombytes.c \
 ../src/sign.c \
-../src/verify.c 
+../src/verify.c \
+../src/rng.c \
+../src/api.c  
 
 OBJS += \
 ./src/bench.o \
@@ -29,9 +30,10 @@ OBJS += \
 ./src/key.o \
 ./src/ntt.o \
 ./src/poly.o \
-./src/randombytes.o \
 ./src/sign.o \
-./src/verify.o 
+./src/verify.o \
+./src/rng.o \
+./src/api.o
 
 C_DEPS += \
 ./src/bench.d \
@@ -44,9 +46,10 @@ C_DEPS += \
 ./src/key.d \
 ./src/ntt.d \
 ./src/poly.d \
-./src/randombytes.d \
 ./src/sign.d \
-./src/verify.d 
+./src/verify.d \
+./src/rng.d \
+./src/api.d
 
 
 # Each subdirectory must supply rules for building sources it contributes

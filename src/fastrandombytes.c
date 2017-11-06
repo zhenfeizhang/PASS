@@ -5,7 +5,7 @@
  */
 
 #include "crypto_stream_salsa20.h"
-#include "randombytes.h"
+#include "rng.h"
 
 static int init = 0;
 static unsigned char key[crypto_stream_salsa20_KEYBYTES];
@@ -15,6 +15,20 @@ void fastrandombytes(unsigned char *r, unsigned long long rlen)
 {
   unsigned long long n=0;
   int i;
+
+  // This is the test input string
+  unsigned char entropy_input[48] = {0};
+  for (int i=0; i<48; i++){
+    entropy_input[i] = 't';
+  } 
+  unsigned char personalization_string[48] = {0};
+  for (int i=0; i<48; i++){
+    personalization_string[i] = 'z';
+  }
+  int security_strength = 48;
+  randombytes_init(entropy_input, personalization_string, security_strength);
+  // test end
+  
   if(!init)
   {
     randombytes(key, crypto_stream_salsa20_KEYBYTES);

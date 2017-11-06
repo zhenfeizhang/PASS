@@ -29,6 +29,7 @@
 #include "hash.h"
 #include "ntt.h"
 #include "pass.h"
+#include "api.h"
 
 #ifndef VERIFY
 #define VERIFY 1
@@ -58,6 +59,7 @@ main(int argc, char **argv)
     fprintf(stderr,"ERROR: Could not allocate memory.\n");
     exit(EXIT_FAILURE);
   }
+
   init_fast_prng();
 
   if(ntt_setup() == -1) {
@@ -72,11 +74,20 @@ main(int argc, char **argv)
   printf("Generating %d signatures %s\n", TRIALS,
           VERIFY ? "and verifying" : "and not verifying");
 
-  gen_key(key);
+  //gen_key(key);
+  int64 pubkey[PASS_N];
+
+  crypto_sign_keypair((unsigned char*)pubkey, (unsigned char*)key);
+  // convert
+  // unsigned char sk[PASS_N] = {0};
+  // for(int i=0; i<PASS_N; i++){
+  //   sk[i] = (unsigned char)key[i];
+  // }
 
 #if DEBUG
   printf("sha512(key): ");
-  crypto_hash_sha512(h, (unsigned char*)key, sizeof(int64)*PASS_N);
+  //crypto_hash_sha512(h, (unsigned char*)key, sizeof(int64)*PASS_N);
+  crypto_hash_sha512(h, sk, sizeof(int64)*PASS_N);
   for(i=0; i<HASH_BYTES; i++) {
     printf("%.2x", h[i]);
   }
@@ -85,30 +96,37 @@ main(int argc, char **argv)
 
 #if VERIFY
   int nbver = 0;
-
-  int64 pubkey[PASS_N] = {0};
-  gen_pubkey(pubkey, key);
+  
+  //int64 pubkey[PASS_N] = {0};
+  //gen_pubkey(pubkey, key);
 #endif
 
   clock_t c0,c1;
   c0 = clock();
 
+  //TRIALS为签名数目
   count = 0;
   for(i=0; i<TRIALS; i++) {
    in[(i&0xff)]++; /* Hash a different message each time */
-   count += sign(h, z, key, in, MLEN);
+    //一个个sign
+   //count += sign(h, z, key, in, MLEN);
+   count += crypto_sign(h, (unsigned long long*)z, in, MLEN, (unsigned char*)key);
 
 #if VERIFY
-   nbver += (VALID == verify(h, z, pubkey, in, MLEN));
+   //verify
+   //nbver += (VALID == verify(h, z, pubkey, in, MLEN));
+   nbver += (VALID == crypto_sign_open(h, (unsigned long long*)z, in, MLEN, (unsigned char*)pubkey));
 #endif
   }
   printf("\n");
 
   c1 = clock();
+  //尝试次数
   printf("Total attempts: %d\n",  count);
 #if VERIFY
   printf("Valid signatures: %d/%d\n",  nbver, TRIALS);
 #endif
+  //
   printf("Attempts/sig: %f\n",  (((float)count)/TRIALS));
   printf("Time/sig: %fs\n", (float) (c1 - c0)/(TRIALS*CLOCKS_PER_SEC));
 
