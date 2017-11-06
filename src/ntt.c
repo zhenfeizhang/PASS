@@ -26,7 +26,7 @@
 #if USE_FFTW
 #include <complex.h>
 #include <math.h>
-#include <fftw3.h>
+#include </usr/include/fftw3.h>
 #endif
 
 #include "constants.h"

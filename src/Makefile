@@ -5,7 +5,7 @@ TOPDIR = ..
 BINDIR = $(TOPDIR)/bin
 DATADIR = $(TOPDIR)/data
 DIRS = $(BINDIR) $(DATADIR)
-
+INC_DIR = /usr/include/
 vpath %.dat $(DATADIR)
 
 CFLAGS += -c
