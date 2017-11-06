@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lfftw3 -lm
+LIBS := -lfftw3 -lm -lcrypto
 
