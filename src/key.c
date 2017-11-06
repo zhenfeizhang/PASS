@@ -20,13 +20,13 @@
 */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "constants.h"
 #include "pass_types.h"
 #include "ntt.h"
-#include "randombytes.h"
+#include "rng.h"
 #include "pass.h"
-
 
 #define RAND_LEN (64)
 
@@ -37,10 +37,25 @@ gen_key(int64 *f)
   int j = 0;
   uint64 r = 0;
   uint64 pool[RAND_LEN];
+
+// This is the test input string
+  unsigned char entropy_input[48] = {0};
+  for (int i=0; i<48; i++){
+    entropy_input[i] = 't';
+  }	
+  unsigned char personalization_string[48] = {0};
+  for (int i=0; i<48; i++){
+    personalization_string[i] = 'z';
+  }
+  int security_strength = 48;
+  randombytes_init(entropy_input, personalization_string, security_strength);
+
   randombytes((unsigned char*)pool, RAND_LEN*sizeof(uint64));
+// test end
 
   while(i < PASS_N) {
     if(j == RAND_LEN) {
+      
       randombytes((unsigned char*)pool, RAND_LEN*sizeof(uint64));
       j = 0;
     }
