@@ -64,7 +64,7 @@ rng_uint64(uint64 *r)
     fastrandombytes((unsigned char*)randpool, RAND_LEN*sizeof(uint16));
     randpos = 0;
   }
-	*r = 0;
+  *r = 0;
   *r |= ((uint64)(randpool[randpos++])) << 060;
   *r |= ((uint64)(randpool[randpos++])) << 040;
   *r |= ((uint64)(randpool[randpos++])) << 020;
@@ -129,7 +129,7 @@ mknoise(int64 *y)
     i++;
   }
 #else
-	DGS(y,PASS_N,sigma);
+  DGS(y,PASS_N,sigma);
 #endif
 
   return 0;
@@ -187,16 +187,18 @@ sign(unsigned char *h, int64 *z, const int64 *key,
   int count;
   b_sparse_poly c;
   int64 y[PASS_N];
-  int64 fc[PASS_N];
   int64 Fy[PASS_N];
   unsigned char msg_digest[HASH_BYTES];
 
-	/* For reject sampling */
-	int64 norm, inner;
-	uint64 t;
-	double e,p,r;
-	static long const bignum = 0xfffffffffffffff;
-	/***********************/
+  /* For reject sampling */
+#ifdef USE_DGS
+  int64 fc[PASS_N];
+  int64 norm, inner;
+  uint64 t;
+  double e,p,r;
+  static long const bignum = 0xfffffffffffffff;
+#endif
+  /***********************/
 
   crypto_hash_sha512(msg_digest, message, msglen);
 
@@ -211,9 +213,11 @@ sign(unsigned char *h, int64 *z, const int64 *key,
     CLEAR(c.val);
     formatc(&c, h);
 
-		/* Compute f*c */
-		CLEAR(fc);
+    /* Compute f*c */
+#ifdef USE_DGS
+    CLEAR(fc);
     bsparseconv(fc, key, &c);
+#endif
 
     /* z = y += f*c */
     bsparseconv(y, key, &c);
@@ -221,25 +225,31 @@ sign(unsigned char *h, int64 *z, const int64 *key,
 
     count++;
 
-		/*
-		for(i = 0; i < PASS_N; i++)
-			fprintf(stderr,"%ld ",y[i]);
-		fprintf(stderr,"\n");
-		*/
-		norm = vector_norm2(fc,PASS_N);
-		// fprintf(stderr,"norm = %ld, ",norm);
-		inner = -2*vector_scalar_product(y,fc,PASS_N);
-		// fprintf(stderr,"inner = %ld, ",inner);
-		e = (double)(norm+inner)/(2*sigma*sigma);
-		// fprintf(stderr,"e = %g, ",e);
-		p = exp(e)/M;
-		// fprintf(stderr,"p = %g, ",p);
+#ifdef USE_DGS
+    /*
+    for(i = 0; i < PASS_N; i++)
+      fprintf(stderr,"%ld ",y[i]);
+    fprintf(stderr,"\n");
+    */
+    norm = vector_norm2(fc,PASS_N);
+    // fprintf(stderr,"norm = %ld, ",norm);
+    inner = -2*vector_scalar_product(y,fc,PASS_N);
+    // fprintf(stderr,"inner = %ld, ",inner);
+    e = (double)(norm+inner)/(2*sigma*sigma);
+    // fprintf(stderr,"e = %g, ",e);
+    p = exp(e)/M;
+    // fprintf(stderr,"p = %g, ",p);
 
-		rng_uint64(&t);
-		r = (1+(t&bignum))/((double)bignum+1);
-		// fprintf(stderr,"r = %g\n",r);
+    rng_uint64(&t);
+    r = (1+(t&bignum))/((double)bignum+1);
+    // fprintf(stderr,"r = %g\n",r);
+#endif
 
+#ifdef USE_DGS
   } while (reject(y) || r > p);
+#else
+  }while(reject(y));
+#endif
 
 #if DEBUG
   int i;
