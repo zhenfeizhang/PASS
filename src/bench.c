@@ -109,8 +109,8 @@ main(int argc, char **argv)
   for(i=0; i<TRIALS; i++) {
    in[(i&0xff)]++; /* Hash a different message each time */
     //一个个sign
-   //count += sign(h, z, key, in, MLEN);
-   count += crypto_sign(h, (unsigned long long*)z, in, MLEN, (unsigned char*)key);
+   count += sign(h, z, key, in, MLEN);
+   //count += crypto_sign(h, (unsigned long long*)z, in, MLEN, (unsigned char*)key);
 
 #if VERIFY
    //verify

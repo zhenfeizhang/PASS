@@ -12,7 +12,7 @@ CFLAGS += -c
 CFLAGS += -Wall
 CFLAGS += -O3 -ffast-math -mtune=native -malign-double
 
-LDFLAGS = -lfftw3 -lm
+LDFLAGS = -lfftw3 -lm -lcrypto
 
 SOURCES=$(wildcard *.c)
 OBJECTS=$(SOURCES:.c=.o)
@@ -36,7 +36,7 @@ data: $(addprefix $(TOPDIR)/data/, $(addsuffix _points.dat, $(PARAMSETS)))
 	$(warning Runtime data for set $* not present ($@). See README.)
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 
 .c.o:
 	$(CC) $(CFLAGS) $< -o $@
