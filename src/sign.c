@@ -184,11 +184,10 @@ int
 sign(unsigned char *h, int64 *z, const int64 *key,
     const unsigned char *message, const int msglen)
 {
-	int i;
   int count;
   b_sparse_poly c;
   int64 y[PASS_N];
-  // int64 fc[PASS_N];
+  int64 fc[PASS_N];
   int64 Fy[PASS_N];
   unsigned char msg_digest[HASH_BYTES];
 
@@ -210,23 +209,15 @@ sign(unsigned char *h, int64 *z, const int64 *key,
     hash(h, Fy, msg_digest);
 
     CLEAR(c.val);
-		for(i = 0; i < 10; i++)
-			fprintf(stderr,"%d ",h[i]);
-		fprintf(stderr,"\n");
     formatc(&c, h);
 
 		/* Compute f*c */
-		// CLEAR(fc);
-    // bsparseconv(fc, key, &c);
+		CLEAR(fc);
+    bsparseconv(fc, key, &c);
 
-		int64 backup[PASS_N];
-		for(i = 0; i < PASS_N; i++)
-			backup[i] = y[i];
     /* z = y += f*c */
     bsparseconv(y, key, &c);
     /* No modular reduction required. */
-		for(i = 0; i < PASS_N; i++)
-			assert(backup[i] == y[i]);
 
     count++;
 
@@ -234,21 +225,21 @@ sign(unsigned char *h, int64 *z, const int64 *key,
 		for(i = 0; i < PASS_N; i++)
 			fprintf(stderr,"%ld ",y[i]);
 		fprintf(stderr,"\n");
+		*/
 		norm = vector_norm2(fc,PASS_N);
-		fprintf(stderr,"norm = %ld, ",norm);
+		// fprintf(stderr,"norm = %ld, ",norm);
 		inner = -2*vector_scalar_product(y,fc,PASS_N);
-		fprintf(stderr,"inner = %ld, ",inner);
+		// fprintf(stderr,"inner = %ld, ",inner);
 		e = (double)(norm+inner)/(2*sigma*sigma);
-		fprintf(stderr,"e = %g, ",e);
+		// fprintf(stderr,"e = %g, ",e);
 		p = exp(e)/M;
-		fprintf(stderr,"p = %g, ",p);
+		// fprintf(stderr,"p = %g, ",p);
 
 		rng_uint64(&t);
 		r = (1+(t&bignum))/((double)bignum+1);
-		fprintf(stderr,"r = %g\n",r);
-		*/
+		// fprintf(stderr,"r = %g\n",r);
 
-  } while (reject(y));// && r > p);
+  } while (reject(y) || r > p);
 
 #if DEBUG
   int i;

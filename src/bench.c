@@ -74,10 +74,10 @@ main(int argc, char **argv)
   printf("Generating %d signatures %s\n", TRIALS,
           VERIFY ? "and verifying" : "and not verifying");
 
-  //gen_key(key);
-  int64 pubkey[PASS_N];
+  gen_key(key);
+  // int64 pubkey[PASS_N];
 
-  crypto_sign_keypair((unsigned char*)pubkey, (unsigned char*)key);
+  // crypto_sign_keypair((unsigned char*)pubkey, (unsigned char*)key);
   // convert
   // unsigned char sk[PASS_N] = {0};
   // for(int i=0; i<PASS_N; i++){
@@ -86,8 +86,8 @@ main(int argc, char **argv)
 
 #if DEBUG
   printf("sha512(key): ");
-  //crypto_hash_sha512(h, (unsigned char*)key, sizeof(int64)*PASS_N);
-  crypto_hash_sha512(h, sk, sizeof(int64)*PASS_N);
+  crypto_hash_sha512(h, (unsigned char*)key, sizeof(int64)*PASS_N);
+  //crypto_hash_sha512(h, sk, sizeof(int64)*PASS_N);
   for(i=0; i<HASH_BYTES; i++) {
     printf("%.2x", h[i]);
   }
@@ -97,8 +97,8 @@ main(int argc, char **argv)
 #if VERIFY
   int nbver = 0;
   
-  //int64 pubkey[PASS_N] = {0};
-  //gen_pubkey(pubkey, key);
+  int64 pubkey[PASS_N] = {0};
+  gen_pubkey(pubkey, key);
 #endif
 
   clock_t c0,c1;
@@ -114,8 +114,8 @@ main(int argc, char **argv)
 
 #if VERIFY
    //verify
-   //nbver += (VALID == verify(h, z, pubkey, in, MLEN));
-   nbver += (VALID == crypto_sign_open(h, (unsigned long long*)z, in, MLEN, (unsigned char*)pubkey));
+   nbver += (VALID == verify(h, z, pubkey, in, MLEN));
+   //nbver += (VALID == crypto_sign_open(h, (unsigned long long*)z, in, MLEN, (unsigned char*)pubkey));
 #endif
   }
   printf("\n");
