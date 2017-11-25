@@ -62,11 +62,13 @@ main(int argc, char **argv)
 
   init_fast_prng();
 
+#if 0
   if(ntt_setup() == -1) {
     fprintf(stderr,
         "ERROR: Could not initialize FFTW. Bad wisdom?\n");
     exit(EXIT_FAILURE);
   }
+#endif
 
   printf("Parameters:\n\t N: %d, p: %d, g: %d, k: %d, b: %d, t: %d\n\n",
       PASS_N, PASS_p, PASS_g, PASS_k, PASS_b, PASS_t);
@@ -149,7 +151,9 @@ main(int argc, char **argv)
 #endif
 
   free(z);
+#if 0
   ntt_cleanup();
+#endif
   return 0;
 }
 

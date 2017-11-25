@@ -20,6 +20,7 @@
 */
 
 #include <string.h>
+#include <stdio.h>
 
 #include "constants.h"
 #include "pass_types.h"
