@@ -62,7 +62,7 @@ main(int argc, char **argv)
 
   init_fast_prng();
 
-#if 0
+#if USE_ORIGINAL_NTT
   if(ntt_setup() == -1) {
     fprintf(stderr,
         "ERROR: Could not initialize FFTW. Bad wisdom?\n");
@@ -151,7 +151,7 @@ main(int argc, char **argv)
 #endif
 
   free(z);
-#if 0
+#if USE_ORIGINAL_NTT
   ntt_cleanup();
 #endif
   return 0;

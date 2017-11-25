@@ -40,10 +40,10 @@
 #endif
 
 #if PASS_N == 512
-#define PASS_p 65537
-//#define PASS_g 421722
-#define PASS_k 32767
-#define PASS_b 29
+#define PASS_p 12289
+#define PASS_g 421722
+#define PASS_k 8191
+#define PASS_b 21
 #define PASS_t 260
 #define PASS_RADER_POLY "../data/512_rader.dat"
 #define PASS_PERMUTATION "../data/512_perm.dat"
@@ -66,7 +66,7 @@
 
 #if PASS_N == 761
 #define PASS_p 65447
-//#define PASS_g 421722
+#define PASS_g 421722
 #define PASS_k 32767
 #define PASS_b 29
 #define PASS_t 382
