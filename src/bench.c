@@ -62,11 +62,13 @@ main(int argc, char **argv)
 
   init_fast_prng();
 
+#if USE_ORIGINAL_NTT
   if(ntt_setup() == -1) {
     fprintf(stderr,
         "ERROR: Could not initialize FFTW. Bad wisdom?\n");
     exit(EXIT_FAILURE);
   }
+#endif
 
   printf("Parameters:\n\t N: %d, p: %d, g: %d, k: %d, b: %d, t: %d\n\n",
       PASS_N, PASS_p, PASS_g, PASS_k, PASS_b, PASS_t);
@@ -74,10 +76,10 @@ main(int argc, char **argv)
   printf("Generating %d signatures %s\n", TRIALS,
           VERIFY ? "and verifying" : "and not verifying");
 
-  //gen_key(key);
-  int64 pubkey[PASS_N];
+  gen_key(key);
+  // int64 pubkey[PASS_N];
 
-  crypto_sign_keypair((unsigned char*)pubkey, (unsigned char*)key);
+  // crypto_sign_keypair((unsigned char*)pubkey, (unsigned char*)key);
   // convert
   // unsigned char sk[PASS_N] = {0};
   // for(int i=0; i<PASS_N; i++){
@@ -86,8 +88,8 @@ main(int argc, char **argv)
 
 #if DEBUG
   printf("sha512(key): ");
-  //crypto_hash_sha512(h, (unsigned char*)key, sizeof(int64)*PASS_N);
-  crypto_hash_sha512(h, sk, sizeof(int64)*PASS_N);
+  crypto_hash_sha512(h, (unsigned char*)key, sizeof(int64)*PASS_N);
+  //crypto_hash_sha512(h, sk, sizeof(int64)*PASS_N);
   for(i=0; i<HASH_BYTES; i++) {
     printf("%.2x", h[i]);
   }
@@ -97,8 +99,8 @@ main(int argc, char **argv)
 #if VERIFY
   int nbver = 0;
   
-  //int64 pubkey[PASS_N] = {0};
-  //gen_pubkey(pubkey, key);
+  int64 pubkey[PASS_N] = {0};
+  gen_pubkey(pubkey, key);
 #endif
 
   clock_t c0,c1;
@@ -109,13 +111,13 @@ main(int argc, char **argv)
   for(i=0; i<TRIALS; i++) {
    in[(i&0xff)]++; /* Hash a different message each time */
     //一个个sign
-   //count += sign(h, z, key, in, MLEN);
-   count += crypto_sign(h, (unsigned long long*)z, in, MLEN, (unsigned char*)key);
+   count += sign(h, z, key, in, MLEN);
+   //count += crypto_sign(h, (unsigned long long*)z, in, MLEN, (unsigned char*)key);
 
 #if VERIFY
    //verify
-   //nbver += (VALID == verify(h, z, pubkey, in, MLEN));
-   nbver += (VALID == crypto_sign_open(h, (unsigned long long*)z, in, MLEN, (unsigned char*)pubkey));
+   nbver += (VALID == verify(h, z, pubkey, in, MLEN));
+   //nbver += (VALID == crypto_sign_open(h, (unsigned long long*)z, in, MLEN, (unsigned char*)pubkey));
 #endif
   }
   printf("\n");
@@ -149,7 +151,9 @@ main(int argc, char **argv)
 #endif
 
   free(z);
+#if USE_ORIGINAL_NTT
   ntt_cleanup();
+#endif
   return 0;
 }
 
