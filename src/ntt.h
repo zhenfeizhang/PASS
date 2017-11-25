@@ -28,8 +28,8 @@
 
 #define NTT_LEN (PASS_N-1)
 
-#define USE_BLISS_NTT 1
-#define USE_NTRU_NTT 0
+#define USE_BLISS_NTT 0
+#define USE_NTRU_NTT 1
 #define USE_ORIGINAL_NTT 0
 
 #if USE_ORIGINAL_NTT
